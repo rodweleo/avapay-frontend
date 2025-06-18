@@ -43,14 +43,14 @@ const Navigation = () => {
 
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Button
           <Button
             variant="ghost"
             className="md:hidden text-white"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? '✕' : '☰'}
-          </Button>
+          </Button> */}
         </div>
 
         {/* Mobile Menu */}

@@ -149,99 +149,97 @@ const BuyAvaxSection = () => {
 
   return (
     <section id="buy-section" className="py-20 px-4 grid place-items-center min-h-screen">
-      <div className="container mx-auto max-w-2xl">
-        <Card className="glass-card border-neon-blue/30 transition-all duration-300 hover:border-neon-blue/50">
-          <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-sora text-white">
-              Buy AVAX with M-PESA
-            </CardTitle>
-            <p className="text-gray-400">Quick, secure, and instant</p>
-          </CardHeader>
+      <Card className="w-full sm:w-full md:max-w-xl glass-card border-neon-blue/30 transition-all duration-300 hover:border-neon-blue/50">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-sora text-white">
+            Buy AVAX with M-PESA
+          </CardTitle>
+          <p className="text-gray-400">Quick, secure, and instant</p>
+        </CardHeader>
 
-          <CardContent className="space-y-6">
-            {/* Custom Amount Input */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">
-                Avalanche Wallet Address
-              </label>
-              <Input
-                type="text"
-                placeholder="Enter avalanche wallet address e.g. 0x123...7rF"
-                // value={formatAmount(amount)}
-                onChange={handleWalletChange}
-                className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-neon-blue transition-colors"
-              />
-            </div>
+        <CardContent className="space-y-6">
+          {/* Custom Amount Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-300">
+              Avalanche Wallet Address
+            </label>
+            <Input
+              type="text"
+              placeholder="Enter avalanche wallet address e.g. 0x123...7rF"
+              // value={formatAmount(amount)}
+              onChange={handleWalletChange}
+              className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-neon-blue transition-colors"
+            />
+          </div>
 
-            {/* Phone Number Input */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">
-                M-PESA Phone Number
-              </label>
-              <SmartPhoneInput
-                value={phoneNumber}
-                onChange={setPhoneNumber}
-                className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-neon-blue transition-colors"
-              />
-            </div>
+          {/* Phone Number Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-300">
+              M-PESA Phone Number
+            </label>
+            <SmartPhoneInput
+              value={phoneNumber}
+              onChange={setPhoneNumber}
+              className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-neon-blue transition-colors"
+            />
+          </div>
 
-            {/* Custom Amount Input */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">
-                Amount (KES)
-              </label>
-              <Input
-                type="text"
-                placeholder="Enter amount"
-                value={formatAmount(amount)}
-                onChange={handleAmountChange}
-                className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-neon-blue transition-colors"
-              />
-              {amount && avaxPrice && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-neon-blue">
-                    You'll receive: {calculateAvax()} AVAX
-                  </span>
-                  <span className="text-gray-400">
-                    @ KES {avaxPrice.toLocaleString()}
-                  </span>
-                </div>
-              )}
-            </div>
-            {/* Quick Amount Buttons */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-300">
-                Quick Select
-              </label>
-              <QuickAmountButtons
-                onAmountSelect={handleQuickAmountSelect}
-                selectedAmount={amount}
-              />
-            </div>
+          {/* Custom Amount Input */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-300">
+              Amount (KES)
+            </label>
+            <Input
+              type="text"
+              placeholder="Enter amount"
+              value={formatAmount(amount)}
+              onChange={handleAmountChange}
+              className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-neon-blue transition-colors"
+            />
+            {amount && avaxPrice && (
+              <div className="flex justify-between text-sm">
+                <span className="text-neon-blue">
+                  You'll receive: {calculateAvax()} AVAX
+                </span>
+                <span className="text-gray-400">
+                  @ KES {avaxPrice.toLocaleString()}
+                </span>
+              </div>
+            )}
+          </div>
+          {/* Quick Amount Buttons */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-300">
+              Quick Select
+            </label>
+            <QuickAmountButtons
+              onAmountSelect={handleQuickAmountSelect}
+              selectedAmount={amount}
+            />
+          </div>
 
-            {/* Buy Button */}
-            <Button
-              onClick={handleBuyAvax}
-              disabled={isLoading}
-              className="w-full bg-avax-red hover:bg-avax-red/80 text-white py-3 font-semibold rounded-xl avax-glow transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Processing STK Push...
-                </div>
-              ) : (
-                "Buy AVAX Now 🚀"
-              )}
-            </Button>
+          {/* Buy Button */}
+          <Button
+            onClick={handleBuyAvax}
+            disabled={isLoading}
+            className="w-full bg-avax-red hover:bg-avax-red/80 text-white py-3 font-semibold rounded-xl avax-glow transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                Processing STK Push...
+              </div>
+            ) : (
+              "Buy AVAX Now 🚀"
+            )}
+          </Button>
 
-            {/* Security Notice */}
-            <div className="text-center text-xs text-gray-400 pt-4 border-t border-gray-700">
-              🔒 Secured on Avalanche • 💼 Your AVAX goes to your wallet
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          {/* Security Notice */}
+          <div className="text-center text-xs text-gray-400 pt-4 border-t border-gray-700">
+            🔒 Secured on Avalanche • 💼 Your AVAX goes to your wallet
+          </div>
+        </CardContent>
+      </Card>
     </section>
   );
 };

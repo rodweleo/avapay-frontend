@@ -39,7 +39,7 @@ const ChatInterface = () => {
 
   const quickReplies = useMemo(() => [
     "Buy 1000 KES",
-    "Buy 5000 KES", 
+    "Buy 5000 KES",
     "Check AVAX price",
     "Help me"
   ], []);
@@ -87,11 +87,11 @@ const ChatInterface = () => {
 
   const processNaturalLanguage = useCallback((text: string): string => {
     const lowerText = text.toLowerCase();
-    
+
     // Extract amount patterns
     const kesMatch = lowerText.match(/(\d+)\s*(kes|ksh|bob|shillings?)/);
     const avaxMatch = lowerText.match(/(\d+(?:\.\d+)?)\s*avax/);
-    
+
     if (kesMatch) {
       const amount = kesMatch[1];
       const avaxAmount = (parseFloat(amount) / 4850).toFixed(4);
@@ -101,21 +101,21 @@ const ChatInterface = () => {
       });
       return `Perfect! I'm sending an STK push for KES ${amount} to your phone. You'll receive ${avaxAmount} AVAX. Check your phone to approve! 🚀`;
     }
-    
+
     if (avaxMatch) {
       const avaxAmount = avaxMatch[1];
       const kesAmount = (parseFloat(avaxAmount) * 4850).toFixed(0);
       return `To buy ${avaxAmount} AVAX, you'll need KES ${kesAmount}. Should I send the STK push?`;
     }
-    
+
     if (lowerText.includes('help') || lowerText.includes('how')) {
       return "I can help you buy AVAX using M-PESA! Just tell me how much you want to buy, like '1000 bob' or '0.5 AVAX' and I'll handle the rest. 💫";
     }
-    
+
     if (lowerText.includes('price')) {
       return "Current AVAX price is KES 4,850. Prices update every 30 seconds from CoinGecko! 📈";
     }
-    
+
     return "I understand you want to buy AVAX! Tell me the amount in KES (like '1000 bob') or AVAX (like '0.5 AVAX') and I'll get started! 🚀";
   }, [toast]);
 
@@ -130,10 +130,10 @@ const ChatInterface = () => {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-avax-red hover:bg-avax-red/80 avax-glow shadow-2xl z-50 p-0 transition-all duration-300 hover:scale-110"
+        className="fixed bottom-6 right-6 size-12 rounded-full bg-avax-red hover:bg-avax-red/80 avax-glow shadow-2xl z-50 p-0 transition-all duration-300 hover:scale-110"
         aria-label="Open chat assistant"
       >
-        <span className="text-2xl">💬</span>
+        <span className="text-xl">💬</span>
       </Button>
     );
   }
@@ -156,7 +156,7 @@ const ChatInterface = () => {
             ✕
           </Button>
         </div>
-        
+
         <CardContent className="flex-1 overflow-auto p-4 space-y-3">
           {messages.map((message) => (
             <div
@@ -164,11 +164,10 @@ const ChatInterface = () => {
               className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
             >
               <div
-                className={`max-w-xs px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
-                  message.isBot
-                    ? 'bg-gray-800 text-gray-200'
-                    : 'bg-avax-red text-white'
-                }`}
+                className={`max-w-xs px-3 py-2 rounded-lg text-sm transition-all duration-200 ${message.isBot
+                  ? 'bg-gray-800 text-gray-200'
+                  : 'bg-avax-red text-white'
+                  }`}
               >
                 {message.isTyping ? (
                   <div className="flex space-x-1">
@@ -203,7 +202,7 @@ const ChatInterface = () => {
             </div>
           </div>
         )}
-        
+
         <div className="p-4 border-t border-gray-700">
           <div className="flex gap-2">
             <Input
