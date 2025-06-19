@@ -53,7 +53,7 @@ const SmartPhoneInput = ({ value, onChange, className }: SmartPhoneInputProps) =
   return (
     <Input
       type="tel"
-      placeholder="Enter phone number e.g. +254 712 345 678"
+      placeholder="e.g. +254 712 345 678"
       value={displayValue}
       onChange={handleChange}
       className={className}
