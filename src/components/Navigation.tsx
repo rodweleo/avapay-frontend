@@ -2,9 +2,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import PriceTicker from "./PriceTicker";
+import { useAppKit } from "@reown/appkit/react";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { open, close } = useAppKit();
+  const { address, isConnected, caipAddress, status, embeddedWalletInfo } = useAppKitAccount();
 
   const scrollToSection = (sectionId: string) => {
     const section = document.getElementById(sectionId);
@@ -22,25 +26,25 @@ const Navigation = () => {
             <span className="font-sora font-bold text-white text-xl">Avapay</span>
           </div>
 
-          <PriceTicker />
+          <div className="hidden md:block">
+            <PriceTicker/>
+          </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            <Button
-              variant="ghost"
-              className="text-gray-300 hover:text-white"
-              onClick={() => scrollToSection('buy-section')}
-            >
-              Buy AVAX
-            </Button>
-            <Button
-              variant="ghost"
-              className="text-gray-300 hover:text-white"
-              onClick={() => scrollToSection('wallet-section')}
-            >
-              Wallet
-            </Button>
-
+          <div className="items-center gap-6">
+          {isConnected ? 
+          <Button
+          onClick={() => open({ view: "Account" })}
+          className="bg-avax-red hover:bg-avax-red/80 text-white py-3 font-semibold rounded-xl avax-glow transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+        >
+          <div className="size-2 rounded-full bg-green-500 animate-pulse"/>
+          <p className="text-white">{address.slice(0, 5) + "..." + address.slice(address.length - 5, address.length)}</p>
+        </Button>
+        : <Button
+        onClick={() => open({ view: "Connect" })}
+        className="bg-avax-red hover:bg-avax-red/80 text-white py-3 font-semibold rounded-xl avax-glow transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+      >Create Wallet  / Login</Button>
+          }
           </div>
 
           {/* Mobile Menu Button

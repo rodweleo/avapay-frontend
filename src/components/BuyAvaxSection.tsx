@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import SmartPhoneInput from "./SmartPhoneInput";
@@ -11,9 +12,12 @@ import { useAvaxRate } from "@/hooks/use-avax-rate"
 import { isAddress } from 'ethers';
 import { socket } from "@/utils/socket.io";
 import axios from "axios"
+import { useAppKitAccount } from "@reown/appkit/react";
+import PriceTicker from "./PriceTicker";
 
 const BuyAvaxSection = () => {
-  const [walletAddress, setWalletAddress] = useState("");
+  const { address, isConnected } = useAppKitAccount();
+  const [walletAddress, setWalletAddress] = useState(address ? address : "");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -148,7 +152,10 @@ const BuyAvaxSection = () => {
   };
 
   return (
-    <section id="buy-section" className="py-20 px-4 grid place-items-center min-h-screen">
+    <section id="buy-section" className="py-20 px-4 grid place-items-center min-h-screen space-y-4">
+      <div className="md:hidden mt-4">
+        <PriceTicker/>
+      </div>
       <Card className="w-full sm:w-full md:max-w-xl glass-card border-neon-blue/30 transition-all duration-300 hover:border-neon-blue/50">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-sora text-white">
@@ -157,26 +164,29 @@ const BuyAvaxSection = () => {
           <p className="text-gray-400">Quick, secure, and instant</p>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           {/* Custom Amount Input */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">
+            <Label className="font-medium text-gray-300">
               Avalanche Wallet Address
-            </label>
+            </Label>
             <Input
               type="text"
-              placeholder="Enter avalanche wallet address e.g. 0x123...7rF"
-              // value={formatAmount(amount)}
+              placeholder="e.g. 0x123...7rF"
+              value={walletAddress}
               onChange={handleWalletChange}
               className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-neon-blue transition-colors"
             />
+            {/* <div>
+              <p className="text-xs">Don't have an Avalanche Wallet Address ? <button className="text-avax-red font-bold leading-loose underline">Create Wallet</button></p>
+            </div> */}
           </div>
 
           {/* Phone Number Input */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">
+            <Label className="font-medium text-gray-300">
               M-PESA Phone Number
-            </label>
+            </Label>
             <SmartPhoneInput
               value={phoneNumber}
               onChange={setPhoneNumber}
@@ -186,12 +196,12 @@ const BuyAvaxSection = () => {
 
           {/* Custom Amount Input */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-300">
+            <Label className="font-medium text-gray-300">
               Amount (KES)
-            </label>
+            </Label>
             <Input
               type="text"
-              placeholder="Enter amount"
+              placeholder="e.g. 10"
               value={formatAmount(amount)}
               onChange={handleAmountChange}
               className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400 focus:border-neon-blue transition-colors"
