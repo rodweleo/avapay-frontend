@@ -4,22 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import LoadingSkeleton from "./LoadingSkeleton";
-
-interface Message {
-  id: string;
-  text: string;
-  isBot: boolean;
-  timestamp: Date;
-  isTyping?: boolean;
-}
+import axios from "axios"
+import generateServerAccessToken from "@/functions/auth/generateServerAccessToken"
+import { Message } from "@/utils/interfaces"
+import MessageBubble from "./messages/MessageBubble";
 
 const ChatInterface = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "👋 Hey there! I'm your Avapay assistant. How much do you want to buy today?",
+      text: "👋 Hey there! I'm your Avapay assistant. How can I assit you today ?",
       isBot: true,
       timestamp: new Date()
     }
@@ -38,8 +33,7 @@ const ChatInterface = () => {
   }, [messages, scrollToBottom]);
 
   const quickReplies = useMemo(() => [
-    "Buy 1000 KES",
-    "Buy 5000 KES",
+    "Check wallet balance",
     "Check AVAX price",
     "Help me"
   ], []);
@@ -73,51 +67,33 @@ const ChatInterface = () => {
     // Show typing indicator
     const typingId = addMessage("Typing...", true, true);
 
-    // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+    try {
+      const { accessToken } = await generateServerAccessToken();
+      const BASE_URL = import.meta.env.VITE_BACKEND_PROD_SERVER_URL!
+      const aiResponse = await axios.post(`${BASE_URL}/agent/chat`, {
+        userInput: JSON.stringify(messages) + messageText
+      }, {
+        headers: {
+          "Authorization": `Bearer ${accessToken}`
+        }
+      })
+      const { response } = aiResponse.data
 
-    // Remove typing indicator
-    setMessages(prev => prev.filter(msg => msg.id !== typingId));
-    setIsTyping(false);
+      // Remove typing indicator
+      setMessages(prev => prev.filter(msg => msg.id !== typingId));
+      setIsTyping(false);
+      addMessage(response, true);
 
-    // Process and respond
-    const response = processNaturalLanguage(messageText);
-    addMessage(response, true);
+    } catch (e) {
+      // Remove typing indicator
+      setMessages(prev => prev.filter(msg => msg.id !== typingId));
+      setIsTyping(false);
+      addMessage("Something went wrong. Please try again.", true);
+      console.log(e)
+    }
   }, [inputText, addMessage]);
 
-  const processNaturalLanguage = useCallback((text: string): string => {
-    const lowerText = text.toLowerCase();
 
-    // Extract amount patterns
-    const kesMatch = lowerText.match(/(\d+)\s*(kes|ksh|bob|shillings?)/);
-    const avaxMatch = lowerText.match(/(\d+(?:\.\d+)?)\s*avax/);
-
-    if (kesMatch) {
-      const amount = kesMatch[1];
-      const avaxAmount = (parseFloat(amount) / 4850).toFixed(4);
-      toast({
-        title: "STK Push Initiated! 📱",
-        description: `Sending KES ${amount} request to your phone`,
-      });
-      return `Perfect! I'm sending an STK push for KES ${amount} to your phone. You'll receive ${avaxAmount} AVAX. Check your phone to approve! 🚀`;
-    }
-
-    if (avaxMatch) {
-      const avaxAmount = avaxMatch[1];
-      const kesAmount = (parseFloat(avaxAmount) * 4850).toFixed(0);
-      return `To buy ${avaxAmount} AVAX, you'll need KES ${kesAmount}. Should I send the STK push?`;
-    }
-
-    if (lowerText.includes('help') || lowerText.includes('how')) {
-      return "I can help you buy AVAX using M-PESA! Just tell me how much you want to buy, like '1000 bob' or '0.5 AVAX' and I'll handle the rest. 💫";
-    }
-
-    if (lowerText.includes('price')) {
-      return "Current AVAX price is KES 4,850. Prices update every 30 seconds from CoinGecko! 📈";
-    }
-
-    return "I understand you want to buy AVAX! Tell me the amount in KES (like '1000 bob') or AVAX (like '0.5 AVAX') and I'll get started! 🚀";
-  }, [toast]);
 
   const handleKeyPress = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -139,8 +115,8 @@ const ChatInterface = () => {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 w-xl h-[500px] z-50">
-      <Card className="glass-card border-neon-blue/30 h-full flex flex-col transition-all duration-300 hover:border-neon-blue/50">
+    <div className="fixed bottom-6 right-6 w-full max-w-[500px] h-[500px] z-50">
+      <Card className="glass-card border-neon-blue/30 h-full flex flex-col transition-all duration-300 hover:border-neon-blue/50 w-full">
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <h3 className="font-semibold text-white flex items-center gap-2">
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
@@ -157,14 +133,14 @@ const ChatInterface = () => {
           </Button>
         </div>
 
-        <CardContent className="flex-1 overflow-auto p-4 space-y-3">
+        <CardContent className="flex-1 overflow-y-auto p-4 space-y-3 w-full">
           {messages.map((message) => (
             <div
               key={message.id}
               className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
             >
               <div
-                className={`max-w-xs px-3 py-2 rounded-lg text-sm transition-all duration-200 ${message.isBot
+                className={`min-w-xs px-3 py-2 rounded-lg text-sm transition-all duration-200 break-words ${message.isBot
                   ? 'bg-gray-800 text-gray-200'
                   : 'bg-avax-red text-white'
                   }`}
@@ -176,7 +152,7 @@ const ChatInterface = () => {
                     <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                   </div>
                 ) : (
-                  message.text
+                  <MessageBubble message={message.text} />
                 )}
               </div>
             </div>

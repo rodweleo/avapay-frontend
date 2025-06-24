@@ -7,16 +7,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import SmartPhoneInput from "./SmartPhoneInput";
 import QuickAmountButtons from "./QuickAmountButtons";
-import LoadingSkeleton from "./LoadingSkeleton";
 import { useAvaxRate } from "@/hooks/use-avax-rate"
 import { isAddress } from 'ethers';
 import { socket } from "@/utils/socket.io";
 import axios from "axios"
 import { useAppKitAccount } from "@reown/appkit/react";
 import PriceTicker from "./PriceTicker";
+import generateServerAccessToken from "@/functions/auth/generateServerAccessToken";
+import { toast as sonnerToast } from "sonner"
 
 const BuyAvaxSection = () => {
-  const { address, isConnected } = useAppKitAccount();
+  const { address } = useAppKitAccount();
   const [walletAddress, setWalletAddress] = useState(address ? address : "");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [amount, setAmount] = useState("");
@@ -43,6 +44,12 @@ const BuyAvaxSection = () => {
       socket.disconnect();
     };
   }, [])
+
+  const clearInputFields = () => {
+    setWalletAddress("")
+    setPhoneNumber("")
+    setAmount("")
+  }
 
   const handleBuyAvax = async () => {
     if (!phoneNumber || !amount || !walletAddress) {
@@ -82,13 +89,17 @@ const BuyAvaxSection = () => {
       navigator.vibrate(50);
     }
 
-
-
     const processTransaction = async () => {
       try {
+        const { accessToken } = await generateServerAccessToken()
         const base_url = import.meta.env.VITE_BACKEND_PROD_SERVER_URL!;
-        const res = await axios.post(`${base_url}/transactions/buy-avax`, { phone: phoneNumber, amountKES: amount, walletAddress })
-        const { success } = res.data
+        const res = await axios.post(`${base_url}/transactions/buy-avax`, { phone: phoneNumber, amountKES: amount, walletAddress }, {
+          headers: {
+            "Authorization": `Bearer ${accessToken}`
+          }
+        })
+        const { success, metadata } = res.data
+        const { avaxAmount, explorer } = metadata
 
         if (!success) {
           toast({
@@ -96,15 +107,30 @@ const BuyAvaxSection = () => {
             description: "Please try again or contact support",
             variant: "destructive"
           });
+          setIsLoading(false);
         }
         toast({
           title: "STK Push Sent!",
           description: `Check your phone (${phoneNumber.replace('254', '+254 ')}) to approve the transaction`,
         });
 
-        setIsLoading(false);
-      } catch (error) {
+        setTimeout(() => {
+          sonnerToast("AVAX Sent", {
+            description: `${metadata.walletAddress.slice(0, 5) + "..." + metadata.walletAddress.slice(metadata.walletAddress.length - 5, metadata.walletAddress.length)} has been funded ${avaxAmount} AVAX.`,
+            action: {
+              label: "View in explorer",
+              onClick: () => {
+                window.open(explorer, "_blank", "noopener,noreferrer");
+              },
+            },
+          });
+        }, 2000)
 
+        setIsLoading(false);
+
+        //clear the fields after processing the transaction successfully
+        clearInputFields()
+      } catch (error) {
         toast({
           title: "Transaction Failed",
           description: "Please try again or contact support",
@@ -154,7 +180,7 @@ const BuyAvaxSection = () => {
   return (
     <section id="buy-section" className="py-20 px-4 grid place-items-center min-h-screen space-y-4">
       <div className="md:hidden mt-4">
-        <PriceTicker/>
+        <PriceTicker />
       </div>
       <Card className="w-full sm:w-full md:max-w-xl glass-card border-neon-blue/30 transition-all duration-300 hover:border-neon-blue/50">
         <CardHeader className="text-center">
