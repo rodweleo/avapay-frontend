@@ -18,6 +18,11 @@ A React TypeScript application for buying AVAX tokens in Kenya using mobile mone
 - **Real-time Updates**: Socket.IO
 - **State Management**: React Hooks
 
+## Avapay Backend
+```bash
+https://github.com/rodweleo/avapay-backend
+```
+
 ## Installation
 
 1. Clone the repository
